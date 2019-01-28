@@ -5,7 +5,7 @@ USER root
 
 # first install dependencies
 RUN apt update && apt install -y --no-install-recommends git libboost-all-dev \
-libyaml-cpp-dev make automake autoconf g++ default-jdk ant wget libtool gdb curl parallel
+libyaml-cpp-dev make automake autoconf g++ default-jdk ant wget libtool gdb curl parallel evince
 
 # now install eclipse
 # download eclipse-cpp
@@ -58,6 +58,8 @@ RUN /opt/eclipse/eclipse -nosplash -data /root/eclipse-workspace -application or
 # create desktop shortcuts
 ADD eclipse.desktop /headless/Desktop
 ADD exo-terminal-emulator.desktop /headless/Desktop
+RUN ln $HOME/dartsim/docs/tcp-interface.pdf /headless/Desktop
+
 # remove unneeded clutter from desktop
 RUN cd $HOME/Desktop; rm firefox.desktop; rm chromium-browser.desktop; \
 chmod +x *.desktop
