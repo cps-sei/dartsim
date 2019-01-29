@@ -9,6 +9,8 @@ with external adaption managers, three example adaption managers (in C++ and
 Java), and is provided as a [Docker](https://www.docker.com/) container for 
 portability.
 
+The paper submitted to SEAMS is available [here](https://github.com/cps-sei/dartsim/blob/master/docs/dartsim-paper.pdf).
+
 # Installation
 
 ## Installing Docker
