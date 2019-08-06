@@ -30,14 +30,11 @@
 #include <dartsim/Simulator.h>
 #include <string>
 #include <boost/asio.hpp>
-#include "json11.hpp"
+#include <json11.hpp>
 #include <vector>
 #include <memory>
 #include <string>
 
-using namespace boost::asio;
-using ip::tcp;
-using namespace json11;
 
 namespace dart {
 namespace sim {
@@ -46,17 +43,17 @@ class AdaptInterface {
 private:
 	dart::sim::Simulator* mSimulatorP;
 	const unsigned mPort;
-	io_service* mIOServiceP;
-	tcp::endpoint* mEndPointP;
-	tcp::acceptor* mAcceptorP;
-	tcp::socket* mSocketP;
+	boost::asio::io_service* mIOServiceP;
+	boost::asio::ip::tcp::tcp::endpoint* mEndPointP;
+	boost::asio::ip::tcp::tcp::acceptor* mAcceptorP;
+	boost::asio::ip::tcp::tcp::socket* mSocketP;
 	std::map<std::string, std::function<std::string(const std::vector<std::string>&)>> mCommandHandlers;
 
 	std::shared_ptr<std::string> readCmd() const;
 	void sendBytes(const std::string& bytes) const;
-	Json convertTeamStateToJson(const dart::sim::TeamState& state) const;
-	Json convertSimulationResultsToJson(const dart::sim::SimulationResults& simResults) const;
-	Json convertSimulationParamsToJson(const dart::sim::SimulationParams& simResults) const;
+	json11::Json convertTeamStateToJson(const dart::sim::TeamState& state) const;
+	json11::Json convertSimulationResultsToJson(const dart::sim::SimulationResults& simResults) const;
+	json11::Json convertSimulationParamsToJson(const dart::sim::SimulationParams& simResults) const;
 
 	std::string cmdFinished(const std::vector<std::string>& args);
 	std::string cmdGetState(const std::vector<std::string>& args);

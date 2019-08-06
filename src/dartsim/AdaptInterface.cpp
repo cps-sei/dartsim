@@ -30,8 +30,13 @@
 #include "assert.h"
 #include <boost/tokenizer.hpp>
 #include <set>
+#include <map>
 
 #define DEBUG_ADAPT_INTERFACE 0
+
+using namespace json11;
+using namespace boost::asio;
+using namespace boost::asio::ip;
 
 namespace dart {
 namespace sim {
