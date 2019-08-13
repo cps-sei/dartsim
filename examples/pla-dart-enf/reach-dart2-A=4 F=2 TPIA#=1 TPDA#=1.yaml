@@ -1,0 +1,262 @@
+configs: 
+- !reach.ConfigDart2
+   altitudeLevel: 1
+   decAlt2Progress: 0
+   decAltProgress: 0
+   ecm: false
+   formation: 1
+   incAlt2Progress: 0
+   incAltProgress: 0
+- !reach.ConfigDart2
+   altitudeLevel: 1
+   decAlt2Progress: 0
+   decAltProgress: 1
+   ecm: false
+   formation: 1
+   incAlt2Progress: 0
+   incAltProgress: 1
+- !reach.ConfigDart2
+   altitudeLevel: 1
+   decAlt2Progress: 0
+   decAltProgress: 0
+   ecm: false
+   formation: 0
+   incAlt2Progress: 0
+   incAltProgress: 0
+- !reach.ConfigDart2
+   altitudeLevel: 1
+   decAlt2Progress: 0
+   decAltProgress: 1
+   ecm: false
+   formation: 0
+   incAlt2Progress: 0
+   incAltProgress: 1
+- !reach.ConfigDart2
+   altitudeLevel: 1
+   decAlt2Progress: 0
+   decAltProgress: 0
+   ecm: false
+   formation: 0
+   incAlt2Progress: 0
+   incAltProgress: 1
+- !reach.ConfigDart2
+   altitudeLevel: 0
+   decAlt2Progress: 0
+   decAltProgress: 1
+   ecm: false
+   formation: 0
+   incAlt2Progress: 0
+   incAltProgress: 1
+- !reach.ConfigDart2
+   altitudeLevel: 3
+   decAlt2Progress: 0
+   decAltProgress: 0
+   ecm: false
+   formation: 0
+   incAlt2Progress: 0
+   incAltProgress: 1
+- !reach.ConfigDart2
+   altitudeLevel: 2
+   decAlt2Progress: 0
+   decAltProgress: 1
+   ecm: false
+   formation: 0
+   incAlt2Progress: 0
+   incAltProgress: 1
+- !reach.ConfigDart2
+   altitudeLevel: 2
+   decAlt2Progress: 0
+   decAltProgress: 0
+   ecm: false
+   formation: 0
+   incAlt2Progress: 0
+   incAltProgress: 1
+- !reach.ConfigDart2
+   altitudeLevel: 3
+   decAlt2Progress: 0
+   decAltProgress: 0
+   ecm: false
+   formation: 1
+   incAlt2Progress: 0
+   incAltProgress: 1
+- !reach.ConfigDart2
+   altitudeLevel: 2
+   decAlt2Progress: 0
+   decAltProgress: 1
+   ecm: false
+   formation: 1
+   incAlt2Progress: 0
+   incAltProgress: 1
+- !reach.ConfigDart2
+   altitudeLevel: 2
+   decAlt2Progress: 0
+   decAltProgress: 1
+   ecm: false
+   formation: 1
+   incAlt2Progress: 0
+   incAltProgress: 0
+- !reach.ConfigDart2
+   altitudeLevel: 3
+   decAlt2Progress: 0
+   decAltProgress: 1
+   ecm: false
+   formation: 1
+   incAlt2Progress: 0
+   incAltProgress: 1
+- !reach.ConfigDart2
+   altitudeLevel: 2
+   decAlt2Progress: 0
+   decAltProgress: 1
+   ecm: false
+   formation: 0
+   incAlt2Progress: 0
+   incAltProgress: 0
+- !reach.ConfigDart2
+   altitudeLevel: 3
+   decAlt2Progress: 0
+   decAltProgress: 1
+   ecm: false
+   formation: 0
+   incAlt2Progress: 0
+   incAltProgress: 1
+- !reach.ConfigDart2
+   altitudeLevel: 0
+   decAlt2Progress: 0
+   decAltProgress: 1
+   ecm: false
+   formation: 1
+   incAlt2Progress: 0
+   incAltProgress: 1
+- !reach.ConfigDart2
+   altitudeLevel: 0
+   decAlt2Progress: 0
+   decAltProgress: 0
+   ecm: false
+   formation: 0
+   incAlt2Progress: 0
+   incAltProgress: 0
+- !reach.ConfigDart2
+   altitudeLevel: 0
+   decAlt2Progress: 0
+   decAltProgress: 0
+   ecm: false
+   formation: 1
+   incAlt2Progress: 0
+   incAltProgress: 0
+- !reach.ConfigDart2
+   altitudeLevel: 0
+   decAlt2Progress: 0
+   decAltProgress: 1
+   ecm: false
+   formation: 0
+   incAlt2Progress: 0
+   incAltProgress: 0
+- !reach.ConfigDart2
+   altitudeLevel: 0
+   decAlt2Progress: 0
+   decAltProgress: 1
+   ecm: false
+   formation: 1
+   incAlt2Progress: 0
+   incAltProgress: 0
+- !reach.ConfigDart2
+   altitudeLevel: 1
+   decAlt2Progress: 0
+   decAltProgress: 0
+   ecm: false
+   formation: 1
+   incAlt2Progress: 0
+   incAltProgress: 1
+- !reach.ConfigDart2
+   altitudeLevel: 2
+   decAlt2Progress: 0
+   decAltProgress: 0
+   ecm: false
+   formation: 1
+   incAlt2Progress: 0
+   incAltProgress: 1
+- !reach.ConfigDart2
+   altitudeLevel: 1
+   decAlt2Progress: 0
+   decAltProgress: 1
+   ecm: false
+   formation: 1
+   incAlt2Progress: 0
+   incAltProgress: 0
+- !reach.ConfigDart2
+   altitudeLevel: 2
+   decAlt2Progress: 0
+   decAltProgress: 0
+   ecm: false
+   formation: 1
+   incAlt2Progress: 0
+   incAltProgress: 0
+- !reach.ConfigDart2
+   altitudeLevel: 2
+   decAlt2Progress: 0
+   decAltProgress: 0
+   ecm: false
+   formation: 0
+   incAlt2Progress: 0
+   incAltProgress: 0
+- !reach.ConfigDart2
+   altitudeLevel: 1
+   decAlt2Progress: 0
+   decAltProgress: 1
+   ecm: false
+   formation: 0
+   incAlt2Progress: 0
+   incAltProgress: 0
+--- 
+0: 
+   1: &1 []
+1: 
+   1: *1
+2: 
+   3: *1
+3: 
+   3: *1
+4: 
+   5: *1
+5: 
+   5: *1
+6: 
+   7: *1
+7: 
+   7: *1
+8: 
+   3: *1
+9: 
+   10: *1
+10: 
+   10: *1
+11: 
+   12: *1
+12: 
+   12: *1
+13: 
+   14: *1
+14: 
+   14: *1
+15: 
+   15: *1
+16: 
+   5: *1
+17: 
+   15: *1
+18: 
+   3: *1
+19: 
+   1: *1
+20: 
+   15: *1
+21: 
+   1: *1
+22: 
+   10: *1
+23: 
+   10: *1
+24: 
+   7: *1
+25: 
+   7: *1

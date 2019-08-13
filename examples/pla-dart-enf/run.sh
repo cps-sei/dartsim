@@ -18,7 +18,7 @@ if [ -z "$PLADAPT" ]; then
 fi
 
 # find location of executable. Either in . or build
-EXECBIN=src/pla_dart
+EXECBIN=src/pla_dart_enf
 BUILD=.
 if [ -f "build/$EXECBIN" ]; then
     BUILD=build
