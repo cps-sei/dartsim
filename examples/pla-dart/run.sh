@@ -25,7 +25,7 @@ if [ -f "build/$EXECBIN" ]; then
 fi
 
 if [ "`basename $0`" = "docker_run.sh" ]; then
-    docker run --mount type=bind,src=$BASEDIR,target=$BASEDIR --mount type=bind,src=$PLADAPT,target=$PLADAPT pladevbase $BASEDIR/run.sh $*
+    docker run --rm --mount type=bind,src=$BASEDIR,target=$BASEDIR --mount type=bind,src=$PLADAPT,target=$PLADAPT pladevbase $BASEDIR/run.sh $*
 else
     if [ "$1" = "runexp" ]; then
 	echo Running experiment...

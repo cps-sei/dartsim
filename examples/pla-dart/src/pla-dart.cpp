@@ -256,6 +256,8 @@ int main(int argc, char** argv) {
 	bool gotStrategy = false;
 #endif
 
+	cout << "lookahead horizon=" << adaptParams.adaptationManager.horizon << endl;
+
 	/* initialize adaptation manager */
 	DartAdaptationManager adaptMgr;
 	adaptMgr.initialize(adaptParams,
@@ -278,7 +280,7 @@ int main(int argc, char** argv) {
 	while (!sim.finished()) {
 		auto simState = sim.getState();
 
-		cout << "current position: " << simState.position << endl;
+		cout << "current position: " << simState.position << " FL " << simState.config.altitudeLevel << endl;
 
 		DartMonitoringInfo monitoringInfo;
 		monitoringInfo.position.x = simState.position.x;
