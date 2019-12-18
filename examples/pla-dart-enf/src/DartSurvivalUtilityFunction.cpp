@@ -46,10 +46,10 @@ static std::unique_ptr<std::normal_distribution<>> pDist;
 static std::default_random_engine randomGenerator;
 
 DartSurvivalUtilityFunction::DartSurvivalUtilityFunction(
-		double threatRange, double destructionFormationFactor,
+		double threatRange, double destructionFormationFactor, unsigned horizon,
 		bool deterministic)
 	: threatRange(threatRange), destructionFormationFactor(destructionFormationFactor),
-		deterministic(deterministic)
+	  	  horizon(horizon), deterministic(deterministic)
 {
 	if (INJECTED_RMSE > 0) {
 		//randomGenerator.seed(RandomSeed::getNextSeed());
@@ -58,6 +58,10 @@ DartSurvivalUtilityFunction::DartSurvivalUtilityFunction(
 	}
 }
 
+
+double DartSurvivalUtilityFunction::getAdditiveUtility(const pladapt::Configuration& config, const pladapt::Environment& env, int time) const {
+	return (time == horizon) ? 1.0 : 0.0;
+}
 
 /**
  * computes s(c_t) in the paper
@@ -74,6 +78,11 @@ double DartSurvivalUtilityFunction::getMultiplicativeUtility(
 
     return 1 - probOfDestruction;
 }
+
+double DartSurvivalUtilityFunction::getFinalReward(const pladapt::Configuration& config, const pladapt::Environment& env, int time) const {
+	return 0.0;
+}
+
 
 
 double DartSurvivalUtilityFunction::getProbabilityOfDestruction(const DartConfiguration& config) const {

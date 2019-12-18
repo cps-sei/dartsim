@@ -31,7 +31,8 @@
 #include <pladapt/Utils.h>
 #include <pladapt/SDPRAAdaptationManager.h>
 #include <pladapt/PMCRAAdaptationManager.h>
-#include <math.h>
+#include <cmath>
+#include <algorithm>
 
 #if DART_USE_CE
 #include <pladapt/CEAdaptationManager.h>
@@ -84,13 +85,14 @@ void DartAdaptationManager::instantiateAdaptationMgr(const Params& params) {
 
 	amParams[pladapt::SDPRAAdaptationManager::PROBABILITY_BOUND] = params.adaptationManager.probabilityBound;
 
-	auto pAdaptMgr = new pladapt::SDPAdaptationManager;
-	pAdaptMgr->initialize(configManager, amParams);
-	missionAdaptMgr.reset(pAdaptMgr);
-
-	auto pSurvivalAdaptMgr = new pladapt::SDPRAAdaptationManager;
+	auto pSurvivalAdaptMgr = new pladapt::SDPAdaptationManager;
 	pSurvivalAdaptMgr->initialize(configManager, amParams);
 	survivabilityAdaptMgr.reset(pSurvivalAdaptMgr);
+
+	auto pAdaptMgr = new pladapt::SDPAdaptationManager;
+	//amParams[pladapt::SDPAdaptationManager::REACH_MODEL] = params.adaptationManager.reachModel + "mission";
+	pAdaptMgr->initialize(configManager, amParams);
+	missionAdaptMgr.reset(pAdaptMgr);
 
 	cout << "done" << endl;
 }
@@ -110,7 +112,7 @@ void DartAdaptationManager::initialize(const Params& params, std::unique_ptr<pla
 }
 
 pladapt::TacticList DartAdaptationManager::decideAdaptation(
-		const DartMonitoringInfo& monitoringInfo) {
+		const DartMonitoringInfo& monitoringInfo, unsigned L) {
 
 	/* update environment */
 	pEnvThreatMonitor->update(monitoringInfo.threatSensing);
@@ -123,11 +125,17 @@ pladapt::TacticList DartAdaptationManager::decideAdaptation(
 	pladapt::EnvironmentDTMCPartitioned jointEnv = pladapt::EnvironmentDTMCPartitioned::createJointDTMC(threatDTMC, targetDTMC);
 
 	/* make adaptation decision */
-	//adaptMgr->setDebug(monitoringInfo.position.x == 4);
-//	missionAdaptMgr->setDebug(true);
-	auto tactics = missionAdaptMgr->evaluate(convertToDiscreteConfiguration(monitoringInfo), jointEnv, *pUtilityFunction, params.adaptationManager.horizon);
+//	missionAdaptMgr->setDebug(monitoringInfo.position.x == 9);
+//	survivabilityAdaptMgr->setDebug(monitoringInfo.position.x == 9);
 
-	auto tacticsOut = survivabilityEnforcer(tactics, monitoringInfo, jointEnv);
+	pladapt::TacticList tactics = missionAdaptMgr->evaluate(convertToDiscreteConfiguration(monitoringInfo), jointEnv, *pUtilityFunction, params.adaptationManager.horizon);
+
+	// enf P v2
+	double requiredP = pow(params.adaptationManager.probabilityBound, 1.0 / 2.0);
+
+	auto tacticsOut = survivabilityEnforcer(tactics, monitoringInfo, jointEnv, requiredP);
+
+//	missionAdaptMgr->printPolicy(tacticsOut);
 
 	return tacticsOut;
 }
@@ -152,98 +160,92 @@ std::shared_ptr<pladapt::Strategy> DartAdaptationManager::getStrategy() {
 	return missionAdaptMgr->getStrategy();
 }
 
+#define SDPRA 0
+
+
+using InfoType = pladapt::SDPAdaptationManager::ExpectedUtilityInfo;
+#define PROBABILITY utility
 
 pladapt::TacticList DartAdaptationManager::survivabilityEnforcer(const pladapt::TacticList& inputTactics,
 		const DartMonitoringInfo& monitoringInfo,
-		pladapt::EnvironmentDTMCPartitioned& jointEnv) {
+		pladapt::EnvironmentDTMCPartitioned& jointEnv, double requiredP) {
 
-#if 0
+#if 1
 	cout << "survivabilityEnforcer([";
 	for (const auto& t : inputTactics) {
 		cout << ' ' << t;
 	}
-	cout << "])" << endl;
+	cout << "]) >=" << requiredP << endl;
 #endif
-//	survivabilityAdaptMgr->setDebug(true);
+	//survivabilityAdaptMgr->setDebug(monitoringInfo.position.x == 4);
+//	survivabilityAdaptMgr->setDebug(false);
 
+//	auto survTactics = missionAdaptMgr->evaluate(convertToDiscreteConfiguration(monitoringInfo), jointEnv, *pSurvivalUtilityFunction, params.adaptationManager.horizon);
+//	auto survInfo = missionAdaptMgr->getExpectedUtilityInfo();
 	auto survTactics = survivabilityAdaptMgr->evaluate(convertToDiscreteConfiguration(monitoringInfo), jointEnv, *pSurvivalUtilityFunction, params.adaptationManager.horizon);
-	auto survInfo = survivabilityAdaptMgr->getSurvivalInfo();
+	auto survInfo = survivabilityAdaptMgr->getExpectedUtilityInfo();
 
-#if 0
-	for (const auto& entry : survInfo) {
-		cout << "surv [";
-		for (auto& tactic : entry.tactics) {
-			cout << ' ' << tactic;
-		}
-		cout << "]=" << entry.probability << endl;
-	}
-#endif
+	double expectedP = 0;
 
 	for (const auto& entry : survInfo) {
-		if (entry.tactics == inputTactics && entry.probability >= params.adaptationManager.probabilityBound) {
+		if (entry.tactics == inputTactics && entry.PROBABILITY >= requiredP) {
+			expectedP = entry.PROBABILITY;
+			decisionTimeStats(expectedP);
 			return inputTactics; // OK pass through
 		}
 	}
 
 	/*
 	 * if nop tactic satisfies P, return that
-	 * if there are actions with no Alt tactic that satisfies P, return one with highest prob
-	 * from actions with Alt tactic that satisfies P, return one with highest prob
+	 * else, if theere are actions that satisfies P, return one with the lowest prob
 	 * else return action with highest prob
-	 *
-	 * TODO add preference for fewer tactics
 	 */
 	assert(survInfo.begin() != survInfo.end());
-	const pladapt::SDPRAAdaptationManager::SurvivalInfo* pBest = &(*survInfo.begin());
-	const pladapt::SDPRAAdaptationManager::SurvivalInfo* pBestWithAltTactic = nullptr;
-	const pladapt::SDPRAAdaptationManager::SurvivalInfo* pBestWithoutAltTactic = nullptr;
+	const InfoType* pBest = &(*survInfo.begin());
+	const InfoType* pBestPassing = nullptr;
 	const pladapt::TacticList* pResult = nullptr;
 
 	for (auto& entry : survInfo) {
-		if (entry.probability >= params.adaptationManager.probabilityBound) {
+		if (entry.PROBABILITY >= requiredP) {
 			if (entry.tactics.empty()) {
 				pResult = &entry.tactics;
+				expectedP = entry.PROBABILITY;
 			}
 
-			bool hasAltTactics = false;
-			for (auto& tactic : entry.tactics) {
-				if (tactic.find("Alt") != std::string::npos) {
-					hasAltTactics = true;
-					break;
-				}
-			}
-
-			if (hasAltTactics) {
-				if (pBestWithAltTactic == nullptr || entry.probability > pBestWithAltTactic->probability) {
-					pBestWithAltTactic = &entry;
-				}
-			} else {
-				if (pBestWithoutAltTactic == nullptr || entry.probability > pBestWithoutAltTactic->probability) {
-					pBestWithoutAltTactic = &entry;
-				}
+			if (pBestPassing == nullptr || entry.PROBABILITY < pBestPassing->PROBABILITY) {
+				pBestPassing = &entry;
 			}
 		}
 
-		if (entry.probability > pBest->probability) {
+		if (entry.PROBABILITY > pBest->PROBABILITY) {
 			pBest = &entry;
 		}
 	}
 
 	if (pResult == nullptr) {
-		if (pBestWithoutAltTactic) {
-			pResult = &pBestWithoutAltTactic->tactics;
-		} else if (pBestWithAltTactic) {
-			pResult = &pBestWithAltTactic->tactics;
+		if (pBestPassing) {
+			pResult = &pBestPassing->tactics;
+			expectedP = pBestPassing->PROBABILITY;
 		} else {
 			pResult = &pBest->tactics;
+			expectedP = pBest->PROBABILITY;
 		}
 	}
+
+	decisionTimeStats(expectedP);
 
 	cout << "survivabilityEnforcer()=";
 	for (const auto& t : *pResult) {
 		cout << ' ' << t;
 	}
 	cout << endl;
+
+//	cout << ">>> new strategy evaluation:" << endl;
+//	origStrategy->front() = *pResult;
+//	double val = missionAdaptMgr->evaluateStrategy(convertToDiscreteConfiguration(monitoringInfo),
+//			jointEnv, *pSurvivalUtilityFunction, params.adaptationManager.horizon, origStrategy);
+//	cout << "val = " << val << endl;
+//	cout << "<<< new strategy evaluation:" << endl;
 
 	return *pResult;
 }

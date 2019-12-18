@@ -41,14 +41,17 @@ public:
 	/**
 	 * @param threat this is used to compute the probability of being hit by the threat
 	 */
-	DartSurvivalUtilityFunction(double threatRange, double destructionFormationFactor,
+	DartSurvivalUtilityFunction(double threatRange, double destructionFormationFactor, unsigned horizon,
 			bool deterministic);
+	virtual double getAdditiveUtility(const pladapt::Configuration& config, const pladapt::Environment& env, int time) const;
     virtual double getMultiplicativeUtility(const pladapt::Configuration& config, const pladapt::Environment& env, int time) const;
+    virtual double getFinalReward(const pladapt::Configuration& config, const pladapt::Environment& env, int time) const;
     virtual ~DartSurvivalUtilityFunction();
 
 protected:
 	const double threatRange;
 	const double destructionFormationFactor;
+	const unsigned horizon;
     const bool deterministic;
 
     double getProbabilityOfDestruction(const DartConfiguration& config) const;

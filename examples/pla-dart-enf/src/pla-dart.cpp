@@ -262,6 +262,8 @@ int main(int argc, char** argv) {
 	bool gotStrategy = false;
 #endif
 
+	cout << "lookahead horizon=" << adaptParams.adaptationManager.horizon << endl;
+
 	/* initialize adaptation manager */
 	DartAdaptationManager adaptMgr;
 	adaptMgr.initialize(adaptParams,
@@ -276,6 +278,7 @@ int main(int argc, char** argv) {
 					new DartSurvivalUtilityFunction(
 							adaptParams.simulationParams.threat.threatRange,
 							adaptParams.simulationParams.threat.destructionFormationFactor,
+							adaptParams.adaptationManager.horizon,
 							adaptParams.simulationParams.optimalityTest))
 							);
 
@@ -287,10 +290,12 @@ int main(int argc, char** argv) {
 	EnvironmentMonitor envThreatMonitor;
 	EnvironmentMonitor envTargetMonitor;
 
+	unsigned segment = 0;
 	while (!sim.finished()) {
+		segment++;
 		auto simState = sim.getState();
 
-		cout << "current position: " << simState.position << endl;
+		cout << "current position: " << simState.position << " FL " << simState.config.altitudeLevel << endl;
 
 		DartMonitoringInfo monitoringInfo;
 		monitoringInfo.position.x = simState.position.x;
@@ -316,6 +321,8 @@ int main(int argc, char** argv) {
 #if !RANDOMSEED_COMPATIBILITY
 
 		// unless compatibility is required, this is preferred (more efficient)
+//		adaptParams.longRangeSensor.threatObservationsPerCycle = 10;
+//		adaptParams.longRangeSensor.targetObservationsPerCycle = 10;
 
 		envThreatMonitor.clear();
 		for (int i = 0l; i < adaptParams.longRangeSensor.threatObservationsPerCycle; i++) {
@@ -357,7 +364,8 @@ int main(int argc, char** argv) {
 		if (!adaptParams.simulationParams.optimalityTest || !gotStrategy) {
 #endif
 			auto startTime = myclock::now();
-			tactics  = adaptMgr.decideAdaptation(monitoringInfo);
+			unsigned L = adaptParams.simulationParams.mapSize - segment + 1;
+			tactics  = adaptMgr.decideAdaptation(monitoringInfo, L);
 			auto delta = myclock::now() - startTime;
 			deltaMsec = chrono::duration_cast<chrono::duration<double, std::milli>>(delta).count();
 

@@ -41,6 +41,16 @@
 #include "DartSurvivalUtilityFunction.h"
 #include "DartDetectionUtilityFunction.h"
 
+
+#include <boost/accumulators/accumulators.hpp>
+#include <boost/accumulators/statistics/stats.hpp>
+#include <boost/accumulators/statistics/mean.hpp>
+#include <boost/accumulators/statistics/moment.hpp>
+
+using Stats = boost::accumulators::accumulator_set<double,
+        boost::accumulators::stats<boost::accumulators::tag::mean,
+                boost::accumulators::tag::moment<2> > >;
+
 #ifdef PLADAPT_SUPPORTS_CE
 #define DART_USE_CE 1
 #else
@@ -132,7 +142,7 @@ public:
 	/**
 	 * Make adaptation decisions based on the latest monitoring information
 	 */
-	pladapt::TacticList decideAdaptation(const DartMonitoringInfo& monitoringInfo);
+	pladapt::TacticList decideAdaptation(const DartMonitoringInfo& monitoringInfo, unsigned L);
 
 
 
@@ -160,11 +170,11 @@ protected:
 
 	pladapt::TacticList survivabilityEnforcer(const pladapt::TacticList& inputTactics,
 			const DartMonitoringInfo& monitoringInfo,
-			pladapt::EnvironmentDTMCPartitioned& jointEnv);
+			pladapt::EnvironmentDTMCPartitioned& jointEnv, double requiredP);
 
 	Params params;
-	std::unique_ptr<pladapt::AdaptationManager> missionAdaptMgr;
-	std::unique_ptr<pladapt::SDPRAAdaptationManager> survivabilityAdaptMgr;
+	std::unique_ptr<pladapt::SDPAdaptationManager> missionAdaptMgr;
+	std::unique_ptr<pladapt::SDPAdaptationManager> survivabilityAdaptMgr;
 
 	std::shared_ptr<const pladapt::ConfigurationManager> configManager;
 	std::unique_ptr<pladapt::UtilityFunction> pUtilityFunction;
@@ -173,6 +183,7 @@ protected:
 	std::unique_ptr<EnvironmentMonitor> pEnvThreatMonitor;
 	std::unique_ptr<EnvironmentMonitor> pEnvTargetMonitor;
 
+	Stats decisionTimeStats;
 public:
 
 	DartConfiguration convertToDiscreteConfiguration(const DartMonitoringInfo& info) const;
