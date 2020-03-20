@@ -174,7 +174,12 @@ protected:
 
 	Params params;
 	std::unique_ptr<pladapt::SDPAdaptationManager> missionAdaptMgr;
-	std::unique_ptr<pladapt::SDPAdaptationManager> survivabilityAdaptMgr;
+#if SDPRA
+	using SurvivabilityAdaptMgrType = pladapt::SDPRAAdaptationManager;
+#else
+	using SurvivabilityAdaptMgrType = pladapt::SDPAdaptationManager;
+#endif
+	std::unique_ptr<SurvivabilityAdaptMgrType> survivabilityAdaptMgr;
 
 	std::shared_ptr<const pladapt::ConfigurationManager> configManager;
 	std::unique_ptr<pladapt::UtilityFunction> pUtilityFunction;

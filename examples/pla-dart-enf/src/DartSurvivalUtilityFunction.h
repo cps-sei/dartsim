@@ -43,7 +43,6 @@ public:
 	 */
 	DartSurvivalUtilityFunction(double threatRange, double destructionFormationFactor, unsigned horizon,
 			bool deterministic);
-	virtual double getAdditiveUtility(const pladapt::Configuration& config, const pladapt::Environment& env, int time) const;
     virtual double getMultiplicativeUtility(const pladapt::Configuration& config, const pladapt::Environment& env, int time) const;
     virtual double getFinalReward(const pladapt::Configuration& config, const pladapt::Environment& env, int time) const;
     virtual ~DartSurvivalUtilityFunction();

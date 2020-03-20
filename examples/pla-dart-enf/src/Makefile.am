@@ -6,7 +6,7 @@ PLADAPT = $(top_srcdir)/../../../pladapt
 
 PLADAPTLIB = $(PLADAPT)/build/src/libadaptmgr.a
 
-AM_CPPFLAGS = -std=c++14 -I$(DARTSIMLIB_PATH)/include -I$(PLADAPT)/include -O3 -Wall -g
+AM_CPPFLAGS = -std=c++14 -I$(DARTSIMLIB_PATH)/include -I$(PLADAPT)/include -O3 -Wall -g -DSDPRA=0
 
 pla_dart_enf_SOURCES = DartAdaptationManager.cpp DartConfiguration.cpp \
 	DartConfigurationManager.cpp DartDTMCEnvironment.cpp DartEnvironment.cpp \

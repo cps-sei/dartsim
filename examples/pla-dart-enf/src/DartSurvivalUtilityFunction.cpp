@@ -59,10 +59,6 @@ DartSurvivalUtilityFunction::DartSurvivalUtilityFunction(
 }
 
 
-double DartSurvivalUtilityFunction::getAdditiveUtility(const pladapt::Configuration& config, const pladapt::Environment& env, int time) const {
-	return (time == horizon) ? 1.0 : 0.0;
-}
-
 /**
  * computes s(c_t) in the paper
  */
@@ -80,10 +76,12 @@ double DartSurvivalUtilityFunction::getMultiplicativeUtility(
 }
 
 double DartSurvivalUtilityFunction::getFinalReward(const pladapt::Configuration& config, const pladapt::Environment& env, int time) const {
-	return 0.0;
+#if !SDPRA
+	return 1.0;
+#else
+	return UtilityFunction::getFinalReward(config, env, time);
+#endif
 }
-
-
 
 double DartSurvivalUtilityFunction::getProbabilityOfDestruction(const DartConfiguration& config) const {
 	double probOfDestruction =
