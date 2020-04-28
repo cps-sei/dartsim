@@ -159,6 +159,16 @@ public:
      */
     std::shared_ptr<pladapt::Strategy> getStrategy();
 
+	/**
+	 * Tells the adaptation manager that the route segment for which
+	 * decideAdaptation() was already invoke had a threat.
+	 * 
+	 * This assumes that the UAVs can observe the threat when they fly over it.
+	 * The adaptation manager can use this to update the probability of mission
+	 * survival.
+	 */ 
+    void reportThreatBelow();
+
     virtual ~DartAdaptationManager();
 
 protected:
@@ -189,6 +199,9 @@ protected:
 	std::unique_ptr<EnvironmentMonitor> pEnvTargetMonitor;
 
 	Stats decisionTimeStats;
+	std::vector<double> pHist;
+	double expectedP;
+
 public:
 
 	DartConfiguration convertToDiscreteConfiguration(const DartMonitoringInfo& info) const;

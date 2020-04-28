@@ -382,6 +382,13 @@ int main(int argc, char** argv) {
 		}
 #endif
 		sim.step(tactics, deltaMsec);
+		dart::sim::TeamConfiguration teamConfig;
+		if (sim.wasThereAThreat(&teamConfig)) {
+			adaptMgr.reportThreatBelow();
+			cout << "stateAtThreat(alt,form, destroyed):" << teamConfig.altitudeLevel
+					<< ',' << teamConfig.formation
+					<< ',' << sim.getResults().destroyed << endl;
+		}
 	}
 
 	auto results = sim.getResults();

@@ -386,6 +386,17 @@ public:
 	 */
 	virtual bool step(const TacticList& tactics, double decisionTimeMsec = 0.0) = 0;
 
+
+	/**
+	 * Query if there was a threat in segment traversed in the previous step.
+	 *
+	 * @param pTeamConfig if not null, is filled with the team configuration
+	 * 	(a subset of the team state) in the previous step.
+	 *
+	 * @return true if there was a threat in the segment of the last step.
+	 */
+	virtual bool wasThereAThreat(TeamConfiguration* pTeamConfig) const = 0;
+
 	/**
 	 * Get results of the simulation
 	 *

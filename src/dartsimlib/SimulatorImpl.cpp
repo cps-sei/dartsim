@@ -222,6 +222,8 @@ bool SimulatorImpl::step(const TacticList& tactics, double decisionTimeMsec) {
 		currentConfig = executeTactic(tactic, currentConfig);
 	}
 
+	configInLastStep = currentConfig;
+
 	/* update display */
 	screen[screenPosition][currentConfig.altitudeLevel - 1] =
 			(currentConfig.formation
@@ -230,6 +232,7 @@ bool SimulatorImpl::step(const TacticList& tactics, double decisionTimeMsec) {
 					(currentConfig.ecm ? '0' : '*');
 
 	/* simulate threats */
+	threatInLastStep = threatEnv.isObjectAt(position);
 	destroyed = pThreatSim->isDestroyed(threatEnv, currentConfig, position);
 	if (destroyed) {
 		cout << "Team destroyed at position " << position << endl;
@@ -329,6 +332,12 @@ TeamConfiguration SimulatorImpl::executeTactic(string tactic, const TeamConfigur
 	return newConfig;
 }
 
+bool SimulatorImpl::wasThereAThreat(TeamConfiguration* pTeamConfig) const {
+	if (pTeamConfig) {
+		*pTeamConfig = configInLastStep;
+	}
+	return threatInLastStep;
+}
 
 std::string SimulatorImpl::getScreenOutput() {
 	ostringstream out;

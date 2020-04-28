@@ -90,6 +90,9 @@ class SimulatorImpl : public Simulator {
 	int directionX = 0; /**< -1, 0 or +1 to indicate the horizontal direction of travel */
 	int directionY = 0; /**< -1, 0 or +1 to indicate the vertical direction of travel */
 
+	bool threatInLastStep;
+	TeamConfiguration configInLastStep;
+
 public:
 	typedef std::set<std::string> TacticList; /**< a set of tactic labels */
 
@@ -126,6 +129,18 @@ public:
 	 * @return true if target was detected
 	 */
 	bool step(const TacticList& tactics, double decisionTimeMsec = 0.0);
+
+
+	/**
+	 * Query if there was a threat in segment traversed in the previous step.
+	 *
+	 * @param pTeamConfig if not null, is filled with the team configuration
+	 * 	in the previous step.
+	 *
+	 * @return true if there was a threat in the segment of the last step.
+	 */
+	bool wasThereAThreat(TeamConfiguration* pTeamConfig) const;
+
 
 	SimulationResults getResults();
 
