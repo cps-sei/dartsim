@@ -32,6 +32,22 @@
 #include <string.h>
 #include "RandomSeed.h"
 
+
+/**
+ * If >0, it uses a sparse environment, meaning that there is no more than one
+ * threat in any portion of the route of the length given by this constant. This only works with
+ * a non-square map. This value is intended to match the look-ahead horizon of the adaptation
+ * manager if it is desired to have only one threat in the range of the look-ahead at a time.
+ *
+ * This constant has to be 0 for a normal build.
+ */
+#define SPARSE_ENVIRONMENT 0
+
+
+#if SPARSE_ENVIRONMENT
+#include "RealEnvironmentSparse.h"
+#endif
+
 using namespace std;
 
 namespace dart {
@@ -180,6 +196,7 @@ Simulator* Simulator::createInstance(int argc, char** argv) {
 	if (autoRange) {
 		simParams.downwardLookingSensor.targetSensorRange = simParams.altitudeLevels;
 		simParams.threat.threatRange = simParams.altitudeLevels * 3 / 4;
+		cout << "autorange: threat range is " << simParams.threat.threatRange << endl;
 	}
 
 	if (numTargets > simParams.mapSize) {
@@ -210,18 +227,31 @@ Simulator* Simulator::createInstance(int argc, char** argv) {
 	targetEnv.setAt(Coordinate(7,2), true);
 	targetEnv.setAt(Coordinate(7,5), true);
 #else
+#if SPARSE_ENVIRONMENT
+	cout << "warning: built with SPARSE_ENVIRONMENT=" << SPARSE_ENVIRONMENT << endl;
+	dart::sim::RealEnvironmentSparse threatEnv;
+#else
 	dart::sim::RealEnvironment threatEnv;
+#endif
 	dart::sim::RealEnvironment targetEnv;
 
 	if (simParams.squareMap) {
 
 		/* generate true environment */
+#if SPARSE_ENVIRONMENT
+		threatEnv.populate(dart::sim::Coordinate(simParams.mapSize, simParams.mapSize), numThreats, SPARSE_ENVIRONMENT);
+#else
 		threatEnv.populate(dart::sim::Coordinate(simParams.mapSize, simParams.mapSize), numThreats);
+#endif		
 		targetEnv.populate(dart::sim::Coordinate(simParams.mapSize, simParams.mapSize), numTargets);
 	} else {
 
 		/* generate true environment */
+#if SPARSE_ENVIRONMENT
+		threatEnv.populate(dart::sim::Coordinate(simParams.mapSize, 1), numThreats, SPARSE_ENVIRONMENT);
+#else
 		threatEnv.populate(dart::sim::Coordinate(simParams.mapSize, 1), numThreats);
+#endif
 		targetEnv.populate(dart::sim::Coordinate(simParams.mapSize, 1), numTargets);
 	}
 #endif
